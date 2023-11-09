@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Particles orbit around magnets which can be dragged around to create currents. The HTML5 canvas element is used for visual output."/>
+        <meta name="keywords" content="hakim, elhattab, hakim el hattab, hakim elhattab, interactive, developer, flash, html5, canvas, web, experiments"/>
+        <meta name="author" content="Hakim El Hattab"/>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width = 670">
+        <title>Magnetic - an experiment with particle currents using HTML5.</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap">
+        <style >
+            html {
+                color: #000;
+                background: #222222;
+            }
+
+            a {
+                cursor: pointer;
+            }
+
+            html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td {
+                margin: 0;
+                padding: 0;
+            }
+
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+
+            fieldset,img {
+                border: 0;
+            }
+
+            address,caption,cite,code,dfn,em,strong,th,var {
+                font-style: normal;
+                font-weight: normal;
+            }
+
+            li {
+                list-style: none;
+            }
+
+            caption,th {
+                text-align: left;
+            }
+
+            q:before,q:after {
+                content: '';
+            }
+
+            abbr,acronym {
+                border: 0;
+                font-variant: normal;
+            }
+
+            sup {
+                vertical-align: text-top;
+            }
+
+            sub {
+                vertical-align: text-bottom;
+            }
+
+            input,textarea,select {
+                font-family: inherit;
+                font-size: inherit;
+                font-weight: inherit;
+                outline-style: none;
+                outline-width: 0pt;
+            }
+
+            legend {
+                color: #000;
+            }
+
+            a:focus,object,h1,h2,h3,h4,h5,h6 {
+                -moz-outline-style: none;
+                border: 0px;
+            }
+
+            strong {
+                font-weight: bold;
+            }
+
+            body {
+                overflow: hidden;
+                font-family: Georgia, Helvetica, Arial, sans-serif;
+                color: #333333;
+                font-size: 11px;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            a, a:hover {
+                transition: all .08s linear;
+                -o-transition: all .08s linear;
+                -moz-transition: all .08s linear;
+                -webkit-transition: all .08s linear;
+                padding: 1px;
+            }
+
+            p.noCanvas {
+                color: #999999;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 150px;
+            }
+
+            #legend{
+              border-radius: 10px;
+                  box-shadow: 0 5px 10px #7fffff, 0 0 0 5px #ffffffeb;
+                  margin-top: 10px;
+                  max-height: 100%;
+                  position: fixed;
+                  right: 515px;
+                  top: 75px;
+                  z-index: 1001;
+                  font-family: 'Orbitron', monospace;
+                  display: flex;
+                  width: 750px;
+                  flex-direction: row;
+                  flex-wrap: wrap;
+            }
+            #gasses{
+              border-radius: 10px;
+              box-shadow: 0 5px 10px #7fffff, 0 0 0 5px #ffffffeb;
+              margin-top: 10px;
+              max-height: 100%;
+              position: fixed;
+              left: 515px;
+              top: 75px;
+              z-index: 1001;
+                  font-family: 'Orbitron', monospace;
+            }
+            h2{
+
+              color: #ebebeb;
+              margin: 10px;
+              font-size: 18px;
+            }
+            h4{
+              color: #ebebeb;
+              font-size: 16px;
+              text-align: right;
+            }
+            .circle{
+              width: 30px;
+              height: 30px;
+              border-radius: 50%;
+              border: #white;
+            }
+            .flex-row{
+              display: flex;
+              width: 225px;
+              justify-content: space-between;
+              align-items: center;
+              margin: 10px 5px ;
+              padding: 5px 0;
+              border-top: 1px solid #7fffff80;
+
+            }
+            .flex-row.hidden{
+              border: none;
+            }
+
+#year_label{
+  position: absolute;
+
+transform: skew(-30deg) translateY(-100%);
+line-height: 1.5;
+font-size: 20px;
+color: white;
+font-family: 'Orbitron', monospace;
+bottom: 250px;
+left: 25%;
+}
+
+.range__label{
+  position: relative;
+  top: -5px;
+      transform: skew(-30deg) translateY(-100%);
+      line-height: 1.5;
+      font-size: 18px;
+      color: white;
+}
+.range {
+
+  background-color: #333;
+      width: 40%;
+      height: 30px;
+      transform: skew(30deg);
+      font-family: 'Orbitron', monospace;
+      position: absolute;
+      bottom: 200px;
+
+    left: 32.5%;
+
+  &:before {
+    --width: calc(var(--p) * 1%);
+
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #7fffff80;
+    z-index: 0;
+    box-shadow: 0 5px 10px #7fffff, 0 0 0 5px #ffffffeb;
+    animation: load .5s forwards linear, glitch 2s infinite linear;
+  }
+
+  &:after {
+    counter-reset: progress var(--p);
+    content: counter(progress) '%';
+    color: #000;
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%) skewX(-30deg);
+    z-index: 1;
+    font-weight: 600;
+    color: #494949;
+  }
+
+  &__label {
+    transform: skew(-30deg) translateY(-100%);
+    line-height: 1.5;
+  }
+}
+
+@keyframes load {
+  to {
+    width: var(--width);
+  }
+}
+
+@keyframes glitch {
+  0%, 5% {
+    transform: translate(0, 0);
+  }
+  1% {
+    transform: translate(-5%, -10%);
+  }
+  2% {
+    transform: translate(10%, 30%);
+  }
+  3%{
+    transform: translate(-43%, 10%);
+  }
+  4% {
+    transform: translate(2%, -23%);
+  }
+}
+
+.profile{
+  opacity: 0.2;
+    position: absolute;
+    bottom: 135px;
+    left: 25%;
+    width: 110px;
+}
+        </style>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+        <script>
+            var flattr_url = 'http://hakim.se/experiments/html5/magnetic/02/';
+            var flattr_btn = 'compact';
+        </script>
+
+    </head>
+    <body>
+        <div id="legend">
+            <h2>
+              Countries
+            </h2>
+            <div class = "flex-row hidden"></div>
+            <div class = "flex-row hidden"></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#FF6666;"></div><h4>Africa</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#66FF66;"></div><h4>Asia (excl. China and India)</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#6666FF;"></div><h4>China</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#CCCC66;"></div><h4>Europe</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#CC66CC;"></div><h4>India</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#66CCCC;"></div><h4>North America (excl. USA)</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#FF8533;"></div><h4>Oceania</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#339933;"></div><h4>South America</h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#996699;"></div><h4>United States</h4></div>
+            </div>
+        </div>
+        <div id="gasses">
+            <h2>
+              Green House Gasses
+            </h2>
+
+              <div class = "flex-row"><div class = "circle" style = "background-color:#bee2e2;"></div><h4>CO2 ( CO2 Equivilent ) </h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#fbfb80;"></div><h4>CH4 ( CO2 Equivilent ) </h4></div>
+              <div class = "flex-row"><div class = "circle" style = "background-color:#daabda;"></div><h4>N2O ( CO2 Equivilent ) </h4></div>
+
+            </div>
+        </div>
+        <div id = "year_label">1900</div>
+        <div class="range" style="--p:0">
+          <div class="range__label">Progress</div>
+        </div>
+        <canvas id="world">
+            <p class="noCanvas">
+                You need a <a href="https://www.google.com/chrome">modern browser</a>
+                to view this.
+            </p>
+        </canvas>
+        <img class = "profile" src = "public/profile.png">
+
+      	<script type="module" src="index0.js"></script>
+    </body>
+</html>
